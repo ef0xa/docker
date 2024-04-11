@@ -8,6 +8,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"reflect"
@@ -137,8 +138,17 @@ func (cli *Client) sendRequest(ctx context.Context, method, path string, query u
 // FIXME(thaJeztah): Should this actually return a serverResp when a connection error occurred?
 func (cli *Client) doRequest(req *http.Request) (serverResponse, error) {
 	serverResp := serverResponse{statusCode: -1, reqURL: req.URL}
-
+	reqDump, _ := httputil.DumpRequestOut(req, true)
 	resp, err := cli.client.Do(req)
+	if resp != nil {
+		httputil.DumpResponse(resp, true)
+	}
+	respDump, _ := httputil.DumpResponse(resp, true)
+	fmt.Printf(`----- Request -----
+%s
+
+----- Response -----
+%s`, reqDump, respDump)
 	if err != nil {
 		if cli.scheme != "https" && strings.Contains(err.Error(), "malformed HTTP response") {
 			return serverResp, errConnectionFailed{fmt.Errorf("%v.\n* Are you trying to connect to a TLS-enabled daemon without TLS?", err)}
