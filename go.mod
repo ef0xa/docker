@@ -2,8 +2,7 @@
 // There is no 'go.mod' file, as that would imply opting in for all the rules
 // around SemVer, which this repo cannot abide by as it uses CalVer.
 
-module github.com/docker/docker
-
+module github.com/ef0xa/docker
 go 1.21
 
 require (
